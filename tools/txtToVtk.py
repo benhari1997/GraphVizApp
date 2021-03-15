@@ -4,9 +4,8 @@ import forceatlas2
 from tools.txtPrep import create_graph_from_text
 from tools.forceatlas import forceatlas2_layout
 
-my_path = "//filer-2/Students/abdessalam.benhari/Bureau/notepad/notepad/mytext.txt"
 
-def fromFileToNetwork(layout_type = "spring", path = my_path, dim = 3, words=[]):
+def fromFileToNetwork(method = "spring", path = None, dim = 3, words=[]):
     """
     Creates a words network from a chosen file and specific layout.
     """
@@ -15,17 +14,17 @@ def fromFileToNetwork(layout_type = "spring", path = my_path, dim = 3, words=[])
 
     # Return a dictionary of positions keyed by node 
     # ... depending on the chosen method :
-    if layout_type == "spring" :
+    if method == "Spring" :
         pos = nx.spring_layout(H,dim=dim,k=1)
-    elif layout_type == "atlas" :
+    elif method == "Atlas" :
         pos = forceatlas2_layout(H, iterations=100,
-                                kr=0.001, dim=dim)
-    elif layout_type == "kamada-ka" :
-        pos = nx.kamada_kawai_layout(H, dim=dim)
-    elif layout_type == "planar" :
-        pos = nx.planar_layout(H, dim=dim)
+                                kr=0.001, dim=3)
+    elif method == "Kamada-ka" :
+        pos = nx.kamada_kawai_layout(H, dim=3)
+    elif method == "Planar" :
+        pos = nx.spectral_layout(H, dim=3)
     else :
-        pos = nx.random_layout(H,dim=dim)
+        pos = nx.random_layout(H,dim=3)
 
     # Convert to list of positions (each is a list)
     XYZ = [list(pos[i]) for i in pos]
@@ -48,7 +47,7 @@ def fromFileToNetwork(layout_type = "spring", path = my_path, dim = 3, words=[])
                                     edges=edges,
                                     scalar=ndegreeValues,
                                     name='degree', dim=dim)
-        return network
+        return network, ndegreeValues
 
     # Creates the vtk network data
     network = changeToVTKNetwork(XYZ,
@@ -56,7 +55,7 @@ def fromFileToNetwork(layout_type = "spring", path = my_path, dim = 3, words=[])
                                 edges=H.edges(),
                                 scalar=degreeValues,
                                 name='degree', dim=dim)
-    return network
+    return network, degreeValues
 
 def changeToVTKNetwork(nodeCoords,
                 nodeLabels = [],
@@ -68,13 +67,14 @@ def changeToVTKNetwork(nodeCoords,
     Store points and/or graphs as vtkPolyData or vtkUnstructuredGrid.
     """
     # Build all the network elements as vtk elements :
-    ## nodes
-    points = vtk.vtkPoints()
+    
+## nodes
+    points = vtk.vtkPoints() if (dim==3) else vtk.vtkPoints2D()
     for node in nodeCoords:
         points.InsertNextPoint(node)
-
     # for a 3D Graph :
     if dim == 3:
+        
         ## Edges 
         line = vtk.vtkCellArray()
         line.Allocate(len(edges))
@@ -102,14 +102,13 @@ def changeToVTKNetwork(nodeCoords,
 
     # For a 2D Graph 
     graphData = vtk.vtkMutableDirectedGraph()
-    graphData.SetPoints(points)
     vx = []
     for i in range(len(nodeLabels)):
         vx.append(graphData.AddVertex())
 
     for edge in edges:
         graphData.AddEdge(vx[list(nodeLabels).index(edge[0])], vx[list(nodeLabels).index(edge[1])])
-
+        
     return graphData
 
 def saveNetwork(networkData, name="network"):

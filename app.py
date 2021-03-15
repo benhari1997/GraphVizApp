@@ -9,7 +9,7 @@ import sys
 
 class App(QMainWindow):
     def __init__(self):
-        super().__init__()
+        super(QMainWindow, self).__init__()
         self.title = 'PyQt5 App - Graph visualisation'
         self.left = 0
         self.top = 0
@@ -17,13 +17,13 @@ class App(QMainWindow):
         self.height = 900
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
+        self.path = "//filer-2/Students/abdessalam.benhari/Bureau/notepad/notepad/mytext.txt"
         
         self.table_widget = TableWidget(self)
         self.setCentralWidget(self.table_widget)
         
         self.editor = self.table_widget.tab1.editor  # Could also use a QTextEdit and set self.editor.setAcceptRichText(False)
 
-        self.path = None
         self.status = QStatusBar()
         self.setStatusBar(self.status)
         
@@ -66,10 +66,9 @@ class App(QMainWindow):
 
     def fileOpen(self):
         path, _ = QFileDialog.getOpenFileName(self, "Open file", "", "Text documents (*.txt)")
-
         if path:
             try:
-                with open(path, 'rU') as f:
+                with open(path, 'r') as f:
                     text = f.read()
 
             except Exception as e:

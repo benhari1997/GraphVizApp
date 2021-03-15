@@ -11,7 +11,7 @@ class TextEditor(QWidget):
         self.editor = QPlainTextEdit()  # Could also use a QTextEdit and set self.editor.setAcceptRichText(False)
         self.tools = QGroupBox("Tools :")
         toolsBoxLayout = QVBoxLayout()
-
+        
         ##
         self.infos = QGroupBox("Statistical Infos :")
         infoBoxLayout = QVBoxLayout()

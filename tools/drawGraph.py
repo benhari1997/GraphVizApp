@@ -1,4 +1,8 @@
 import vtk
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
+import matplotlib.pyplot as plt
+import random
 
 def draw3Dgraph(source):
     
@@ -15,7 +19,7 @@ def draw3Dgraph(source):
 
     # Tell the filter to "clamp" the scalar range
     glyph.ClampingOn()  
-
+    glyph.GeneratePointIdsOn()
     # Set the overall (multiplicative) scaling factor
     glyph.SetScaleFactor(1)
 
@@ -54,7 +58,7 @@ def draw3Dgraph(source):
 
     tubeActor = vtk.vtkActor()
     tubeActor.SetMapper(tubeMapper)
-
+    
     return glyphActor, tubeActor
 
 
@@ -84,7 +88,6 @@ def draw2Dgraph(source):
     graphToPoly.SetInputConnection(layout.GetOutputPort())
     graphToPoly.EdgeGlyphOutputOn()
 
-    ###
     # Set the position (0: edge start, 1: edge end) where
     # the edge arrows should go.
     graphToPoly.SetEdgeGlyphPosition(0.98)
@@ -92,7 +95,7 @@ def draw2Dgraph(source):
     # Make a simple edge arrow for glyphing.
     arrowSource = vtk.vtkGlyphSource2D()
     arrowSource.SetGlyphTypeToEdgeArrow()
-    arrowSource.SetScale(0.4)
+    arrowSource.SetScale(1)
     arrowSource.Update()
 
     # Use Glyph3D to repeat the glyph on all edges.
@@ -105,5 +108,19 @@ def draw2Dgraph(source):
     arrowMapper.SetInputConnection(arrowGlyph.GetOutputPort())
     arrowActor = vtk.vtkActor()
     arrowActor.SetMapper(arrowMapper)
+    graphLayoutView.GetRenderer().AddActor(arrowActor)
 
-    return arrowActor
+    return graphLayoutView
+
+def drawPlot(figure, canvas, data):
+    # create an axis
+    ax = figure.add_subplot(111)
+
+    # discards the old graph
+    ax.clear()
+
+    # plot data
+    ax.hist(data)
+
+    # refresh canvas
+    canvas.draw()
