@@ -7,6 +7,7 @@ import vtk
 import os
 import sys
 import networkx as nx 
+
 from interface.txtTab import TextEditor
 from interface.vtkTab import VTKGraph
 

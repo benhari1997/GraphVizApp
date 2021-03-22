@@ -2,27 +2,25 @@ import networkx as nx
 from nltk.corpus import stopwords
 from tqdm import tqdm
 
-def load_file(filename):
-    """
-    loads file as list of words
+def loadFile(filename):
+    """ loads file as list of words
     """
     with open(filename,'r') as f:
         text = f.readlines()
     return text
 
 def preprocess(line):
-    """
-    preprocesses each text's line
+    """ preprocesses each text's line
     """
     stop_words = set(stopwords.words('english'))
     line = [item.lower() for item in line if not item.lower() in stop_words]
     return line
 
-def create_graph_from_text(text_path):
+def createGraphFromText(textPath):
+    """ returns a networkx graph after
+        preprocessing it.
     """
-    returns a networkx graph after preprocessing it.
-    """
-    text = load_file(text_path)
+    text = loadFile(textPath)
     word_list = []
     G = nx.Graph()
     pbar = tqdm(total=len(text))

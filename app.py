@@ -1,62 +1,102 @@
+import vtk
+
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtPrintSupport import *
+
 from interface.mainWindow import TableWidget
-from tools.txtToVtk import saveNetwork 
+
 import os
 import sys
 
 class App(QMainWindow):
+
     def __init__(self):
         super(QMainWindow, self).__init__()
-        self.title = 'PyQt5 App - Graph visualisation'
+        # Esthetics
+        self.title = 'VTK - Graph visualisation'
         self.left = 0
         self.top = 0
         self.width = 1400
         self.height = 900
         self.setWindowTitle(self.title)
+        self.setWindowIcon(QIcon('data/images/main-icon.png'))
         self.setGeometry(self.left, self.top, self.width, self.height)
-        self.path = "//filer-2/Students/abdessalam.benhari/Bureau/notepad/notepad/mytext.txt"
-        
-        self.table_widget = TableWidget(self)
-        self.setCentralWidget(self.table_widget)
-        
-        self.editor = self.table_widget.tab1.editor  # Could also use a QTextEdit and set self.editor.setAcceptRichText(False)
 
-        self.status = QStatusBar()
-        self.setStatusBar(self.status)
+
+        # Default prameters 
+        self.path = "data/docs/mytext.txt"
+        self.networkData = None
         
+        # setting the central widget (the main window)
+        self.tableWidget = TableWidget(self)
+        self.setCentralWidget(self.tableWidget)
+        
+        self.editor = self.tableWidget.tab1.editor 
+
+        # Menubar settings
+        # == File bar
         fileMenu = self.menuBar().addMenu("&File")
 
-        openFAction = QAction(QIcon(os.path.join('data/images', 'blue-folder-open-document.png')), "Open file...", self)
+        ## open file
+        openFAction = QAction(
+            QIcon(
+                os.path.join('data/images','blue-folder-open-document.png')
+                ),
+            "Open file...",self)
         openFAction.setStatusTip("Open file")
         openFAction.triggered.connect(self.fileOpen)
         fileMenu.addAction(openFAction)
 
-        saveFAction = QAction(QIcon(os.path.join('data/images', 'disk.png')), "Save", self)
+        ## save file
+        saveFAction = QAction(
+            QIcon(
+                os.path.join('data/images', 'disk.png')
+                ),
+            "Save", self)
         saveFAction.setStatusTip("Save current page")
         saveFAction.triggered.connect(self.fileSave)
         fileMenu.addAction(saveFAction)
 
-        saveAsFAction = QAction(QIcon(os.path.join('data/images', 'disk--pencil.png')), "Save As...", self)
+        ## Save file with specific name
+        saveAsFAction = QAction(
+            QIcon(
+                os.path.join('data/images', 'disk--pencil.png')
+                ),
+            "Save As...", self)
         saveAsFAction.setStatusTip("Save current page to specified file")
         saveAsFAction.triggered.connect(self.fileSaveAs)
         fileMenu.addAction(saveAsFAction)
-
+        # == Visualisation bar
         visMenu = self.menuBar().addMenu("&Visualisation")
 
-        exportAction = QAction(QIcon(os.path.join('data/images', 'arrow-curve.png')), "Export..", self)
+        ## export visualisation
+        exportAction = QAction(
+            QIcon(
+                os.path.join('data/images', 'arrow-curve.png')
+                ),
+            "Export..", self)
         exportAction.setStatusTip("Export visualisation as vtp file")
-        exportAction.triggered.connect(saveNetwork)
+        exportAction.triggered.connect(self.saveNetwork)
         visMenu.addAction(exportAction)
 
-        resetAction = QAction(QIcon(os.path.join('data/images', 'arrow-continue.png')), "Reset..", self)
+        ## reset visualisation
+        resetAction = QAction(
+            QIcon(
+                os.path.join('data/images', 'arrow-continue.png')
+                ),
+                "Reset..", self)
         resetAction.setStatusTip("Reselt all changes")
         resetAction.triggered.connect(self.editor.redo)
         visMenu.addAction(resetAction)
 
+        # Display app 
         self.show()
+
+    #
+    # Main window trigger functions :
+    #
 
     def dialogCritical(self, s):
         dlg = QMessageBox(self)
@@ -65,7 +105,11 @@ class App(QMainWindow):
         dlg.show()
 
     def fileOpen(self):
-        path, _ = QFileDialog.getOpenFileName(self, "Open file", "", "Text documents (*.txt)")
+        """ Gets the path of the chosen file
+            to open and displays its text.
+        """
+        path, _ = QFileDialog.getOpenFileName(
+                    self, "Open file", "", "Text documents (*.txt)")
         if path:
             try:
                 with open(path, 'r') as f:
@@ -79,14 +123,21 @@ class App(QMainWindow):
                 self.editor.setPlainText(text)
 
     def fileSave(self):
+        """ Saves the file if existent and
+            runs the saveAs function if not.
+        """
         if self.path is None:
-            # If we do not have a path, we need to use Save As.
-            return self.file_saveas()
+            # uses save as if the path doesn t exist.
+            return self.fileSaveAs()
 
         self._save_to_path(self.path)
 
     def fileSaveAs(self):
-        path, _ = QFileDialog.getSaveFileName(self, "Save file", "", "Text documents (*.txt)")
+        """ Allows the user to choose a
+            path where to save the file.
+        """
+        path, _ = QFileDialog.getSaveFileName(
+                    self, "Save file", "", "Text documents (*.txt)")
 
         if not path:
             # If dialog is cancelled, will return ''
@@ -95,18 +146,38 @@ class App(QMainWindow):
         self._save_to_path(path)
 
     def _save_to_path(self, path):
+        """ Saves the file in the chosen
+            path.
+        """
         text = self.editor.toPlainText()
         try:
             with open(path, 'w') as f:
                 f.write(text)
 
         except Exception as e:
-            self.dialog_critical(str(e))
+            self.dialogCritical(str(e))
 
         else:
             self.path = path
 
+    def saveNetwork(self):
+        """ Saves the network as a ".vtp"
+            for further analysis (Exp.Paraview).
+        """
+        if self.networkData:
+            # a default name
+            net = "network"
+
+            # setting a vtk writer
+            writer = vtk.vtkXMLPolyDataWriter()
+            writer.SetFileName('data/networks/'+net+'.vtp')
+            writer.SetInputData(self.networkData)
+
+            # writing on file
+            writer.Write()
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
+    #app.setStyle('Fusion')
     window = App()
     app.exec_()
