@@ -1,4 +1,4 @@
-**VTK - Graph visualisation project :**
+# VTK - Graph visualisation project :
 ___
 This project is a simple implementation of a Pyqt application that displays documents data as graphs on 2D and 3D dimensions and allows the user to modify the current displayed document or create a new one.
 
