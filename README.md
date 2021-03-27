@@ -26,12 +26,13 @@ For further details please refer to the _Word2Vec_ notebook in the <code>ML</cod
 ___
  - File-edit interface :
  
-![file-edit](https://github.com/benhari1997/GraphVizApp/tree/master/examples/file-edit-interface.png)
+![file-edit](https://github.com/benhari1997/GraphVizApp/tree/master/examples/file-edit-interface.PNG)
  - Graph-visualization interface :
  
 
-![file-edit](https://github.com/benhari1997/GraphVizApp/tree/master/examples/graph-display-interface.png)
-![file-edit](https://github.com/benhari1997/GraphVizApp/tree/master/examples/graph-display-interface-2D.png)
+![Graph vis 3D](https://github.com/benhari1997/GraphVizApp/tree/master/examples/graph-display-interface.PNG)
+
+![Graph vis 2D](https://github.com/benhari1997/GraphVizApp/tree/master/examples/graph-display-interface-2D.PNG)
 
 > #### Bibliography : 
 ___
