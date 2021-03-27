@@ -38,7 +38,7 @@ ___
 ___
 
 - vtk documentation : https://kitware.github.io/vtk-examples/site/Python/
-- The original <code> forceatlas.py </code> code author :
+- The original <code> forceatlas.py </code> code author 1 source code : Timothée Poisot <a href="https://github.com/tpoisot/nxfa2">tPoisot</a>.
 - Word2vec tutorial : https://kavita-ganesan.com/gensim-word2vec-tutorial-starter-code/#.YFkBxOfjI2w
 - PyQt5 documentation : https://doc.qt.io/qtforpython/
 ___
