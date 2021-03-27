@@ -15,13 +15,24 @@ ___
 - PyQt5
 - vtk
 - networkx
-- 
+- jupyter-notebook
 > #### Machine Learning :
 ___
 
 The machine learning model used to predict he synonyms is the word2vec algorithms, it has been trained using the _OpinRank_ dataset. 
 
 For further details please refer to the _Word2Vec_ notebook in the <code>ML</code> folder.
+> #### Snapshots : 
+___
+ - File-edit interface :
+ 
+![file-edit](examples/file-edit-interface.png)
+ - Graph-visualization interface :
+ 
+
+![file-edit](examples/graph-display-interface.png)
+![file-edit](examples/graph-display-interface-2D.png)
+
 > #### Bibliography : 
 ___
 
